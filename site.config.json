@@ -1,23 +1,29 @@
-﻿{
-    "name":  "Evinto Solutions",
-    "url":  "http://simplyoptima.com",
-    "description":  "",
-    "industry":  "",
-    "hasContactForm":  true,
-    "expectedNavItems":  [
-
-                         ],
-    "viewports":  [
-                      "desktop",
-                      "mobile",
-                      "tablet"
-                  ],
-    "skipVisual":  false,
-    "skipForms":  false,
-    "auth":  {
-                 "required":  false,
-                 "loginUrl":  "",
-                 "username":  "",
-                 "password":  ""
-             }
+{
+    "name": "Evinto Solutions",
+    "url": "https://simplyoptima.com",
+    "description": "Case management and volunteer software for CASA programs",
+    "industry": "NonProfit / Legal Tech / Case Management Software",
+    "hasContactForm": false,
+    "expectedNavItems": [
+        "Home",
+        "Features",
+        "Plans",
+        "Training",
+        "Reviews",
+        "About",
+        "Contact"
+    ],
+    "viewports": [
+        "desktop",
+        "mobile",
+        "tablet"
+    ],
+    "skipVisual": false,
+    "skipForms": true,
+    "auth": {
+        "required": false,
+        "loginUrl": "",
+        "username": "",
+        "password": ""
+    }
 }
