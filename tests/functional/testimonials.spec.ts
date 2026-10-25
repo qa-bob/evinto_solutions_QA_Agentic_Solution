@@ -15,7 +15,7 @@ import { test, expect } from '@fixtures/site.fixture';
 test.describe('Testimonials Section @functional', () => {
   test.beforeEach(async ({ page, siteConfig }) => {
     await page.goto(siteConfig.url, { waitUntil: 'domcontentloaded' });
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('load');
   });
 
   test('testimonials section exists in the DOM @functional', async ({ page }) => {
@@ -37,10 +37,7 @@ test.describe('Testimonials Section @functional', () => {
     await section.scrollIntoViewIfNeeded();
 
     const heading = section.locator('h2, h3').first();
-    if (await heading.count() === 0) {
-      console.warn('[functional] #testimonials has no heading — skipping heading text check.');
-      return;
-    }
+    test.skip(await heading.count() === 0, '#testimonials has no heading');
 
     const text = await heading.textContent();
     expect(text?.trim().length, 'Testimonials heading should have text').toBeGreaterThan(3);
@@ -58,7 +55,7 @@ test.describe('Testimonials Section @functional', () => {
 
     if (await quotes.count() === 0) {
       // Fallback: check that the section has substantial text
-      const sectionText = await section.evaluate<string>((el) => (el as HTMLElement).innerText ?? '');
+      const sectionText = await section.evaluate((el) => (el as HTMLElement).innerText ?? '');
       expect(
         sectionText.trim().length,
         'Testimonials section should contain readable text content'
@@ -80,10 +77,7 @@ test.describe('Testimonials Section @functional', () => {
       'blockquote, [class*="testimonial"], [class*="quote"], [class*="review"]'
     );
 
-    if (await quotes.count() === 0) {
-      console.warn('[functional] Could not identify individual quote elements — skipping count check.');
-      return;
-    }
+    test.skip(await quotes.count() === 0, 'Could not identify individual quote elements');
 
     expect(
       await quotes.count(),
@@ -91,16 +85,15 @@ test.describe('Testimonials Section @functional', () => {
     ).toBeGreaterThan(1);
   });
 
-  test('testimonials nav link is present @functional', async ({ page }) => {
+  test('testimonials nav link is present @functional', async ({ page }, testInfo) => {
+    // Small viewports usually hide the nav behind a toggle — covered by the mobile nav test
+    test.skip(testInfo.project.name !== 'chromium-desktop', 'Runs only in the "chromium-desktop" project');
     const reviewsLink = page
       .locator('nav a, [role="navigation"] a')
       .filter({ hasText: /reviews?|testimonials?/i })
       .first();
 
-    if (await reviewsLink.count() === 0) {
-      console.warn('[functional] No "Reviews" or "Testimonials" nav link found.');
-      return;
-    }
+    test.skip(await reviewsLink.count() === 0, 'No "Reviews" or "Testimonials" nav link found');
 
     await expect(reviewsLink, 'Reviews nav link should be visible').toBeVisible();
     const href = await reviewsLink.getAttribute('href');

@@ -16,7 +16,7 @@ import { test, expect } from '@fixtures/site.fixture';
 test.describe('Pricing Section @functional', () => {
   test.beforeEach(async ({ page, siteConfig }) => {
     await page.goto(siteConfig.url, { waitUntil: 'domcontentloaded' });
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('load');
   });
 
   test('pricing section exists in the DOM @functional', async ({ pricingPage }) => {
@@ -60,7 +60,7 @@ test.describe('Pricing Section @functional', () => {
     await pricingPage.scrollIntoView();
 
     // Look for price text using a broad approach — any text containing $ in the section
-    const priceText = await pricingPage.pricingSection.evaluate<string>((el) => (el as HTMLElement).innerText ?? '');
+    const priceText = await pricingPage.pricingSection.evaluate((el) => (el as HTMLElement).innerText ?? '');
     expect(
       priceText,
       'Pricing section should display at least one dollar amount'
@@ -76,16 +76,14 @@ test.describe('Pricing Section @functional', () => {
     ).toBeGreaterThan(0);
   });
 
-  test('pricing nav link scrolls to plans section @functional', async ({ page, siteConfig }) => {
+  test('pricing nav link scrolls to plans section @functional', async ({ page, siteConfig }, testInfo) => {
+    // Small viewports usually hide the nav behind a toggle — covered by the mobile nav test
+    test.skip(testInfo.project.name !== 'chromium-desktop', 'Runs only in the "chromium-desktop" project');
     const plansNavLink = page.locator('nav a[href*="#plans"], nav a').filter({ hasText: /plans?|pricing/i }).first();
 
-    if (await plansNavLink.count() === 0) {
-      console.warn('[functional] No "Plans" nav link found — skipping scroll test.');
-      return;
-    }
+    test.skip(await plansNavLink.count() === 0, 'No "Plans" nav link found');
 
     await plansNavLink.click();
-    await page.waitForTimeout(500); // allow smooth scroll
 
     const section = page.locator('#plans');
     await expect(section, '#plans should exist after nav click').toBeAttached();
