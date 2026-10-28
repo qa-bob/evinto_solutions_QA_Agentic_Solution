@@ -16,7 +16,7 @@ import { test, expect } from '@fixtures/site.fixture';
 test.describe('Features Section @functional', () => {
   test.beforeEach(async ({ page, siteConfig }) => {
     await page.goto(siteConfig.url, { waitUntil: 'domcontentloaded' });
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('load');
   });
 
   test('features section exists in the DOM @functional', async ({ featuresPage }) => {
@@ -67,17 +67,15 @@ test.describe('Features Section @functional', () => {
     }
   });
 
-  test('features section navigation link scrolls to section @functional', async ({ page, siteConfig }) => {
+  test('features section navigation link scrolls to section @functional', async ({ page, siteConfig }, testInfo) => {
+    // Small viewports usually hide the nav behind a toggle — covered by the mobile nav test
+    test.skip(testInfo.project.name !== 'chromium-desktop', 'Runs only in the "chromium-desktop" project');
     // The SPA nav has a "Features" anchor link
     const featuresNavLink = page.locator('nav a[href*="#features"], nav a').filter({ hasText: /features/i }).first();
 
-    if (await featuresNavLink.count() === 0) {
-      console.warn('[functional] No "Features" nav link found — skipping scroll test.');
-      return;
-    }
+    test.skip(await featuresNavLink.count() === 0, 'No "Features" nav link found');
 
     await featuresNavLink.click();
-    await page.waitForTimeout(500); // allow smooth scroll
 
     // After clicking, the features section should be in view
     const section = page.locator('#features');

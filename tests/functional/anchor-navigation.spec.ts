@@ -24,7 +24,7 @@ const KNOWN_SECTIONS: Array<{ anchor: string; navText: RegExp; description: stri
 test.describe('Anchor Navigation @functional', () => {
   test.beforeEach(async ({ page, siteConfig }) => {
     await page.goto(siteConfig.url, { waitUntil: 'domcontentloaded' });
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('load');
   });
 
   test('all known anchor sections exist in the DOM @functional', async ({ page }) => {
@@ -95,16 +95,15 @@ test.describe('Anchor Navigation @functional', () => {
     ).toBeLessThanOrEqual(2);
   });
 
-  test('clicking a nav anchor link does not navigate to a new page @functional', async ({ page, siteConfig }) => {
+  test('clicking a nav anchor link does not navigate to a new page @functional', async ({ page, siteConfig }, testInfo) => {
+    // Small viewports usually hide the nav behind a toggle — covered by the mobile nav test
+    test.skip(testInfo.project.name !== 'chromium-desktop', 'Runs only in the "chromium-desktop" project');
     const featuresLink = page
       .locator('nav a[href*="#features"], nav a')
       .filter({ hasText: /features/i })
       .first();
 
-    if (await featuresLink.count() === 0) {
-      console.warn('[functional] No Features nav link found — skipping in-page navigation test.');
-      return;
-    }
+    test.skip(await featuresLink.count() === 0, 'No Features nav link found');
 
     // Track any full-page navigations
     let didNavigateAway = false;

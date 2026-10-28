@@ -72,10 +72,7 @@ test.describe('Homepage Content @functional', () => {
     await page.goto(siteConfig.url, { waitUntil: 'domcontentloaded' });
     const bookDemo = page.locator('a').filter({ hasText: /book demo/i }).first();
 
-    if (await bookDemo.count() === 0) {
-      console.warn('[functional] "Book Demo" link not found — skipping href check.');
-      return;
-    }
+    test.skip(await bookDemo.count() === 0, '"Book Demo" link not found');
 
     const href = await bookDemo.getAttribute('href');
     expect(href, '"Book Demo" link should have a non-empty href').toBeTruthy();
